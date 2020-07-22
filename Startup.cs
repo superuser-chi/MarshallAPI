@@ -30,7 +30,7 @@ namespace MarshallAPI {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices (IServiceCollection services) {
             services.AddDbContext<MarshallContext> (options =>
-                options.UseSqlite (
+                options.UseSqlServer (
                     Configuration.GetConnectionString ("WebApiDatabase")), ServiceLifetime.Transient);
             services.AddIdentity<User, IdentityRole> (options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<MarshallContext> ()
