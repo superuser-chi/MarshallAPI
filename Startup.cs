@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MarshallAPI.Data;
 using MarshallAPI.Entities;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +37,11 @@ namespace MarshallAPI {
                 .AddDefaultTokenProviders ();
             services.AddControllers ();
             services.AddSwaggerGen ();
+            services.AddDataProtection ().PersistKeysToFileSystem (new DirectoryInfo ($"{Directory.GetCurrentDirectory()}/Keys"))
+                .UseCryptographicAlgorithms (new AuthenticatedEncryptorConfiguration () {
+                    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+                        ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
