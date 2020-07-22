@@ -1,16 +1,18 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+WORKDIR /src
+COPY ["MarshallAPI/MarshallAPI.csproj", "MarshallAPI/"]
+RUN dotnet restore "MarshallAPI/MarshallAPI.csproj"
+COPY ./MarshallAPI ./MarshallAPI
+WORKDIR "/src/MarshallAPI"
+RUN dotnet build "MarshallAPI.csproj" -c Release -o /app/build
 
-# Copy everything else and build
-COPY . ./
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "MarshallAPI.csproj" -c Release -o /app/publish
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
-CMD ["dotnet", "MarshallAPI.dll"]
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "MarshallAPI.dll"]
