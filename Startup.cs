@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,16 @@ namespace MarshallAPI {
             services.AddIdentity<User, IdentityRole> (options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<MarshallContext> ()
                 .AddDefaultTokenProviders ();
-            services.AddControllers ();
+            services
+                .AddHttpsRedirection (options => { options.HttpsPort = 443; })
+                .AddMvcCore ();
+
+            services.Configure<ForwardedHeadersOptions> (options => {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                    ForwardedHeaders.XForwardedProto;
+                options.KnownNetworks.Clear ();
+                options.KnownProxies.Clear ();
+            });
             services.AddSwaggerGen ();
             services.AddDataProtection ().PersistKeysToFileSystem (new DirectoryInfo ($"{Directory.GetCurrentDirectory()}/Keys"))
                 .UseCryptographicAlgorithms (new AuthenticatedEncryptorConfiguration () {
@@ -64,7 +74,10 @@ namespace MarshallAPI {
                 c.RoutePrefix = string.Empty;
             });
 
-            app.UseHttpsRedirection ();
+            if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DYNO"))) {
+                Console.WriteLine ("Use https redirection");
+                app.UseHttpsRedirection ();
+            }
 
             app.UseRouting ();
 
