@@ -4,14 +4,16 @@ using MarshallAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MarshallAPI.Migrations
 {
     [DbContext(typeof(MarshallContext))]
-    partial class MarshallContextModelSnapshot : ModelSnapshot
+    [Migration("20200723161920_ChangeColumnToBeNull")]
+    partial class ChangeColumnToBeNull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
