@@ -24,6 +24,25 @@ namespace MarshallAPI.Controllers {
             return await _context.Slots.ToListAsync ();
         }
 
+        [HttpGet ("Days")]
+        public async Task<ActionResult<IEnumerable<Slot>>> GetDays () {
+            var currDayPresent = _context.Days
+                .Any (i => i.DateKey == DateTime.UtcNow.Date.ToString ());
+            if (!currDayPresent) {
+                _context.Days.Add (new Day {
+                    DateKey = DateTime.UtcNow.ToString ("yyyy/MM/dd")
+                });
+                try {
+                    await _context.SaveChangesAsync ();
+                } catch (DbUpdateConcurrencyException) {
+                    throw;
+                }
+            }
+
+            var list = await _context.Days.ToListAsync ();
+            return Ok (list);
+        }
+
         // GET: api/Slots/5
         [HttpGet ("{id}")]
         public async Task<ActionResult<Slot>> GetSlot (int id) {
@@ -87,6 +106,9 @@ namespace MarshallAPI.Controllers {
 
         private bool SlotExists (int id) {
             return _context.Slots.Any (e => e.SlotId == id);
+        }
+        private bool DayExists (String DateKey) {
+            return _context.Days.Any (e => e.DateKey == DateKey);
         }
     }
 }
