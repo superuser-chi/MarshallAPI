@@ -31,11 +31,12 @@ namespace MarshallAPI.Controllers {
 
         [HttpGet ("Days")]
         public async Task<ActionResult<IEnumerable<Slot>>> GetDays () {
-            var currDayPresent = _context.Days
-                .Any (i => i.DateKey == DateTime.UtcNow.Date.ToString ());
+            var today = DateTime.UtcNow.ToString("yyyy/MM/dd");
+            var currDayPresent = await _context.Days
+                .AnyAsync (i => i.DateKey == today);
             if (!currDayPresent) {
                 _context.Days.Add (new Day {
-                    DateKey = DateTime.UtcNow.ToString ("yyyy/MM/dd")
+                    DateKey = today
                 });
                 try {
                     await _context.SaveChangesAsync ();
@@ -107,6 +108,18 @@ namespace MarshallAPI.Controllers {
             await _context.SaveChangesAsync ();
 
             return slot;
+        }
+        [HttpDelete ("Days/{id}")]
+        public async Task<ActionResult<Day>> DeleteDay (string id) {
+            var day = await _context.Days.FindAsync (id);
+            if (day == null) {
+                return NotFound ();
+            }
+
+            _context.Days.Remove (day);
+            await _context.SaveChangesAsync ();
+
+            return day;
         }
 
         private bool SlotExists (int id) {
