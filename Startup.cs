@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using MarshallAPI.Data;
 using MarshallAPI.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +38,7 @@ namespace MarshallAPI {
                 .AddDefaultTokenProviders ();
             services.AddControllers ();
             services.AddSwaggerGen ();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddDataProtection ().PersistKeysToFileSystem (new DirectoryInfo ($"{Directory.GetCurrentDirectory()}/Keys"))
                 .UseCryptographicAlgorithms (new AuthenticatedEncryptorConfiguration () {
                     EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
