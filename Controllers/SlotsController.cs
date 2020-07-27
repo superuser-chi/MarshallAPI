@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using MarshallAPI.Data;
+using MarshallAPI.DTO;
 using MarshallAPI.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +15,18 @@ namespace MarshallAPI.Controllers {
     [ApiController]
     public class SlotsController : ControllerBase {
         private readonly MarshallContext _context;
+        private readonly IMapper _mapper;
 
-        public SlotsController (MarshallContext context) {
+        public SlotsController (MarshallContext context, IMapper mapper) {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Slots
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Slot>>> GetSlots () {
-            return await _context.Slots.ToListAsync ();
+        public async Task<ActionResult<IEnumerable<SlotDTO>>> GetSlots () {
+            var list = await _context.Slots.Include (i => i.kombi.User).ToListAsync ();
+            return Ok(_mapper.Map<IEnumerable<SlotDTO>>(list));
         }
 
         [HttpGet ("Days")]
