@@ -19,6 +19,8 @@ namespace MarshallAPI.Data {
                 base.OnModelCreating (modelBuilder);
 
                 entity.HasKey (e => e.SlotId);
+                entity.Property (e => e.Time)
+                    .IsRequired ();
 
                 entity.HasOne (e => e.kombi)
                     .WithMany (k => k.Slots)
