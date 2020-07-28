@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MarshallAPI.Entities;
 
 namespace MarshallAPI.DTO {
-    public class KombiDTO : Slot {
+    public class KombiDTO : Kombi {
         public string OwnerName { get; set; }
     }
 }
