@@ -45,7 +45,7 @@ namespace MarshallAPI.Controllers {
 
         [HttpGet ("Days")]
         public async Task<ActionResult<IEnumerable<Slot>>> GetDays () {
-            var today = DateTime.UtcNow.ToString ("yyyy/MM/dd");
+            var today = DateTime.Today.ToString ("yyyy/MM/dd");
             var currDayPresent = await _context.Days
                 .AnyAsync (i => i.DateKey == today);
             if (!currDayPresent) {
