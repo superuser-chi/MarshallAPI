@@ -25,13 +25,16 @@ namespace MarshallAPI.Controllers {
         // GET: api/Slots
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SlotDTO>>> GetSlots () {
-            var list = await _context.Slots.Include (i => i.kombi.User).ToListAsync ();
-            return Ok(_mapper.Map<IEnumerable<SlotDTO>>(list));
+            var list = await _context.Slots
+                .OrderByDescending (i => i.DayId)
+                .ThenByDescending (i => i.Time)
+                .Include (i => i.kombi.User).ToListAsync ();
+            return Ok (_mapper.Map<IEnumerable<SlotDTO>> (list));
         }
 
         [HttpGet ("Days")]
         public async Task<ActionResult<IEnumerable<Slot>>> GetDays () {
-            var today = DateTime.UtcNow.ToString("yyyy/MM/dd");
+            var today = DateTime.UtcNow.ToString ("yyyy/MM/dd");
             var currDayPresent = await _context.Days
                 .AnyAsync (i => i.DateKey == today);
             if (!currDayPresent) {
@@ -109,6 +112,7 @@ namespace MarshallAPI.Controllers {
 
             return slot;
         }
+
         [HttpDelete ("Days/{id}")]
         public async Task<ActionResult<Day>> DeleteDay (string id) {
             var day = await _context.Days.FindAsync (id);
