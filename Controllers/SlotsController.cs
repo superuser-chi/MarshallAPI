@@ -32,6 +32,17 @@ namespace MarshallAPI.Controllers {
             return Ok (_mapper.Map<IEnumerable<SlotDTO>> (list));
         }
 
+        [HttpGet ("byroute")]
+        public async Task<ActionResult<IEnumerable<SlotDTO>>> GetSlotsByRoute (string id) {
+            var list = await _context.Slots
+                .OrderByDescending (i => i.DayId)
+                .ThenByDescending (i => i.Time)
+                .Include (i => i.kombi.User)
+                .Where (s => s.RouteId == id)
+                .ToListAsync ();
+            return Ok (_mapper.Map<IEnumerable<SlotDTO>> (list));
+        }
+
         [HttpGet ("Days")]
         public async Task<ActionResult<IEnumerable<Slot>>> GetDays () {
             var today = DateTime.UtcNow.ToString ("yyyy/MM/dd");

@@ -30,6 +30,15 @@ namespace MarshallAPI.Controllers {
                 .ToListAsync ();
             return Ok (_mapper.Map<IEnumerable<KombiDTO>> (list));
         }
+        // GET: api/Kombis
+        [HttpGet ("byroute")]
+        public async Task<ActionResult<IEnumerable<KombiDTO>>> GetKombisByRoute (string id) {
+            var list = await _context.Kombis
+                .Include (i => i.User)
+                .Where (k => k.User.RouteId == id)
+                .ToListAsync ();
+            return Ok (_mapper.Map<IEnumerable<KombiDTO>> (list));
+        }
 
         // GET: api/Kombis/5
         [HttpGet ("{id}")]
