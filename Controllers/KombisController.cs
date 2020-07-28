@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using MarshallAPI.Data;
+using MarshallAPI.DTO;
 using MarshallAPI.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +15,20 @@ namespace MarshallAPI.Controllers {
     [ApiController]
     public class KombisController : ControllerBase {
         private readonly MarshallContext _context;
+        private readonly IMapper _mapper;
 
-        public KombisController (MarshallContext context) {
+        public KombisController (MarshallContext context, IMapper mapper) {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Kombis
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Kombi>>> GetKombis () {
-            return await _context.Kombis.ToListAsync ();
+        public async Task<ActionResult<IEnumerable<KombiDTO>>> GetKombis () {
+            var list = await _context.Kombis
+                .Include (i => i.User)
+                .ToListAsync ();
+            return Ok (_mapper.Map<IEnumerable<KombiDTO>> (list));
         }
 
         // GET: api/Kombis/5
