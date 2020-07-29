@@ -338,3 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+app/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png
